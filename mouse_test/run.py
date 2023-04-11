@@ -40,13 +40,13 @@ def main():
             './data/BE_Tonsil_l3_dryad.csv', args.distance_thres, args.sample_rate)
         dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
     elif args.dataset == 'MouseLymph':
-        labeled_X, labeled_y, unlabeled_X, unlabeled_y, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(
-            './data/mouse_lymph_simplified.csv', args.distance_thres, args.sample_rate)
+        labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(
+            './data/mouse_lymph_simplified.csv', args.distance_thres, args.sample_rate, way = 'strat')
         dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
     stellar = STELLAR(args, dataset)
     stellar.train()
     _, results = stellar.pred()
-    np.save(os.path.join(args.savedir, args.dataset + '_results.npy'), results)
+    np.save(os.path.join(args.savedir, args.dataset + '_results_epoch20_wd0.npy'), results)
 
 
 if __name__ == '__main__':
