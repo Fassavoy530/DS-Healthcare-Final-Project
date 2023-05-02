@@ -16,7 +16,7 @@ def main():
     parser.add_argument('--wd', type=float, default=5e-2)
     parser.add_argument('--num-heads', type=int, default=22)
     parser.add_argument('--num-seed-class', type=int, default=0)
-    parser.add_argument('--sample-rate', type=float, default=0.5)
+    parser.add_argument('--sample-rate', type=float, default=1)
     parser.add_argument('-b', '--batch-size', default=1, type=int,
                         metavar='N',
                         help='mini-batch size')
@@ -40,13 +40,17 @@ def main():
             './data/BE_Tonsil_l3_dryad.csv', args.distance_thres, args.sample_rate)
         dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
     elif args.dataset == 'MouseLymph':
-        labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(
-            './data/mouse_lymph_simplified.csv', args.distance_thres, args.sample_rate, way = 'strat')
+        labeled_X, labeled_y, unlabeled_X, test_y, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(
+            './data/mouse_lymph_simplified.csv', args.distance_thres, args.sample_rate, way = 'strat', filename_cross='./data/region2_mouse_lymph_simplified.csv')
+        dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
+    elif args.dataset == 'MouseLymphCross':
+        labeled_X, labeled_y, unlabeled_X, test_y, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(
+            './data/region1_2_healthy_mouse_lymph_simplified.csv', args.distance_thres, args.sample_rate, way = 'cross', filename_cross='./data/region2_mouse_lymph_simplified.csv')
         dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
     stellar = STELLAR(args, dataset)
     stellar.train()
     _, results = stellar.pred()
-    np.save(os.path.join(args.savedir, args.dataset + '_results_epoch20_wd0.npy'), results)
+    np.save(os.path.join(args.savedir, args.dataset + '_results__cross_epoch320_batch32_dist50_class14.npy'), results)
 
 
 if __name__ == '__main__':
