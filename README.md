@@ -33,7 +33,7 @@ This example is set to run on GATV2. In case for running on original STELLAR mod
 
 ## Singularity Setting (NYU GREENE HPC)
 
-1.
+1. Our Setup of CUDA image which ran successfully
 ```
 cuda11.7.99-cudnn8.5-devel-ubuntu22.04.2.sif
 ```
