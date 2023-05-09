@@ -23,6 +23,10 @@ conda install -c conda-forge igraph -y
 conda install -c conda-forge louvain -y
 ```
 
+## Dataset
+Tonsil BE dataset can be obtained from here: https://datadryad.org/stash/share/1OQtxew0Unh3iAdP-ELew-ctwuPTBz6Oy8uuyxqliZk
+
+
 ## Run 
 An example of running the model with dataset (MouseLymphCrossInfection)
 ```
