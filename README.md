@@ -34,6 +34,11 @@ python run.py --dataset MouseLymphCrossInfection --num-heads 14 --num-seed-class
 ```
 This example is set to run on GATV2. In case for running on original STELLAR model, remove the cnn_type argument from the command.
 
+For Tonsil BE dataset,
+```
+python run.py --dataset TonsilBE --num-heads 14 --num-seed-class 3 --wd 0 --lr 1e-3 --batch-size 32 --epoch 320 --distance_thres 30 --sample-rate 0.5 --cnn_type gat
+```
+
 
 ## Singularity Setting (NYU GREENE HPC)
 
