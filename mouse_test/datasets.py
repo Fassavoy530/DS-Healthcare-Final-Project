@@ -83,6 +83,27 @@ def load_mouselymph_data(filename, distance_thres, sample_rate, way = 'naive', f
         unlabeled_edges = get_mouselymph_edge_index(unlabeled_pos, distance_thres)
         test_y = []
 
+    elif way == 'cross_infection':
+        df = pd.read_csv(filename)
+        train_df = df.loc[df['region'] == 'healthy']
+        train_df = train_df.sample(n=round(sample_rate*len(train_df)), random_state=1)
+        test_df = df.loc[df['region'] == 'infected']
+        train_X = train_df.iloc[:, 1:-4].values
+        test_X = test_df.iloc[:, 1:-4].values
+        train_y = train_df['cluster'].str.lower()
+        labeled_pos = train_df.iloc[:, -4:-2].values
+        unlabeled_pos = test_df.iloc[:, -4:-2].values
+        cell_types = np.sort(list(set(train_y))).tolist()
+        cell_type_dict = {}
+        inverse_dict = {}    
+        for i, cell_type in enumerate(cell_types):
+            cell_type_dict[cell_type] = i
+            inverse_dict[i] = cell_type
+        train_y = np.array([cell_type_dict[x] for x in train_y])
+        labeled_edges = get_mouselymph_edge_index(labeled_pos, distance_thres)
+        unlabeled_edges = get_mouselymph_edge_index(unlabeled_pos, distance_thres)
+        test_y = []
+
     return train_X, train_y, test_X, test_y, labeled_edges, unlabeled_edges, inverse_dict
 
 

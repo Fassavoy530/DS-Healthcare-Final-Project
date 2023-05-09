@@ -18,7 +18,7 @@ class STELLAR:
         self.args = args
         self.dataset = dataset
         args.input_dim = dataset.unlabeled_data.x.shape[-1]
-        self.model = models.Encoder(args.input_dim, args.num_heads)
+        self.model = models.Encoder(args.input_dim, args.num_heads, sage=False)
         self.model = self.model.to(args.device)
 
     def train_supervised(self, args, model, device, dataset, optimizer, epoch):

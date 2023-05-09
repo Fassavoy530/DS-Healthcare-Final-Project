@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn import Parameter
-from torch_geometric.nn import SAGEConv
+from torch_geometric.nn import SAGEConv, GATv2Conv
 
 
 class NormedLinear(nn.Module):
@@ -18,12 +18,15 @@ class NormedLinear(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, x_dim, num_cls):
+    def __init__(self, x_dim, num_cls, sage=True):
         super(Encoder, self).__init__()
         self.x_dim = x_dim
         hid_dim = 128
         self.conv1 = nn.Linear(x_dim, hid_dim)
-        self.conv2 = SAGEConv(hid_dim, hid_dim)
+        if sage:
+            self.conv2 = SAGEConv(hid_dim, hid_dim)
+        else:
+            self.conv2 = GATv2Conv(hid_dim, hid_dim, num_heads=2)
         self.relu = nn.ReLU()
         self.linear = NormedLinear(hid_dim, num_cls)
 
