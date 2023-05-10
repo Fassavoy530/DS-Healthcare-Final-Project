@@ -4,13 +4,9 @@ from STELLAR import STELLAR
 import numpy as np
 import os
 import torch
-from datasets import GraphDataset, load_mouselymph_data
+from datasets import GraphDataset, load_mouselymph_data, load_tonsilbe_data
 
-#RUN MouseLymphCross COMMAND:
-# python run.py --dataset MouseLymphCross --num-heads 14 --num-seed-class 3 --wd 0 --lr 1e-3 --batch-size 32 --epoch 320 --distance_thres 50
-#RUN BETonsil COMMAND:
-# python run.py --dataset TonsilBE --num-heads 13 --num-seed-class 3 --wd 0 --lr 1e-3 --batch-size 32 --epoch 320 --distance_thres 30
-
+# Run Commands On README
 
 def main():
     parser = argparse.ArgumentParser(description='STELLAR')
@@ -22,6 +18,8 @@ def main():
     parser.add_argument('--wd', type=float, default=5e-2)
     parser.add_argument('--num-heads', type=int, default=22)
     parser.add_argument('--num-seed-class', type=int, default=0)
+    parser.add_argument('--num_attn_heads', type=int, default=1)
+    parser.add_argument('--cnn_type', type=str, default='sage')
     parser.add_argument('--sample-rate', type=float, default=1)
     parser.add_argument('-b', '--batch-size', default=1, type=int,
                         metavar='N',
@@ -38,7 +36,10 @@ def main():
 
     if args.dataset == 'MouseLymph':
         labeled_X, labeled_y, unlabeled_X, test_y, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(
-            './data/mouse_lymph_simplified.csv', args.distance_thres, args.sample_rate, way = 'strat')
+            './data/mouse_lymph_simplified.csv', args.distance_thres, args.sample_rate, way = 'within_tissue')
+        dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
+    elif args.dataset == 'TonsilBE':
+        labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges, inverse_dict = load_tonsilbe_data('./data/BE_Tonsil_l3_dryad.csv', args.distance_thres, args.sample_rate)
         dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
     elif args.dataset == 'MouseLymphCross':
         labeled_X, labeled_y, unlabeled_X, test_y, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(

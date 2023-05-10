@@ -18,15 +18,15 @@ class NormedLinear(nn.Module):
 
 
 class Encoder(nn.Module):
-    def __init__(self, x_dim, num_cls, sage=True):
+    def __init__(self, x_dim, num_cls, num_attn_heads=2, cnn_type='sage'):
         super(Encoder, self).__init__()
         self.x_dim = x_dim
         hid_dim = 128
         self.conv1 = nn.Linear(x_dim, hid_dim)
-        if sage:
+        if cnn_type == 'sage':
             self.conv2 = SAGEConv(hid_dim, hid_dim)
         else:
-            self.conv2 = GATv2Conv(hid_dim, hid_dim, num_heads=2)
+            self.conv2 = GATv2Conv(hid_dim, hid_dim, heads=num_attn_heads)
         self.relu = nn.ReLU()
         self.linear = NormedLinear(hid_dim, num_cls)
 

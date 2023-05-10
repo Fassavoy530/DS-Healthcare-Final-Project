@@ -48,30 +48,26 @@ def get_mouselymph_edge_index(pos, distance_thres):
     edge_list = np.transpose(np.nonzero(dists_mask)).tolist() # indices to the matrix where the value is true
     return edge_list
 
-def load_mouselymph_data(filename, distance_thres, sample_rate, way = 'within_tissue', filename_cross = './data/region2_mouse_lymph_simplified.csv'):
+def load_mouselymph_data(filename, distance_thres, sample_rate, way = 'within_tissue'):
     if way == 'within_tissue':
         df = pd.read_csv(filename)
-        train, test = train_test_split(df, test_size=0.2, random_state=42, stratify=df['cluster'])
+        train, test = train_test_split(
+            df, test_size=0.2, random_state=42, stratify=df['cluster'])
+
         train_df = pd.DataFrame(train)
-        train_X_df = train_df.iloc[:, 2:-3]
-        train_X = train_X_df.to_numpy()
-        train_y = train_df['cluster'].to_numpy()
+    
+        train_df_sampled = train_df.sample(
+            n=round(sample_rate*len(train_df)), random_state=1)
+    
+        train_X = train_df_sampled.iloc[:, 1:-3].values
+        train_y = train_df_sampled['cluster'].to_numpy()
 
         test_df = pd.DataFrame(test)
-        test_X = test_df.iloc[:, 2:-3].values
+        test_X = test_df.iloc[:, 1:-3].values
         test_y = test_df['cluster'].to_numpy()
 
-        labeled_pos = train_X[:, -3:-1]
-        unlabeled_pos = test_X[:, -3:-1]
-        cell_types = np.sort(list(set(train_y))).tolist()
-        cell_type_dict = {}
-        inverse_dict = {}    
-        for i, cell_type in enumerate(cell_types):
-            cell_type_dict[cell_type] = i
-            inverse_dict[i] = cell_type
-        train_y = np.array([cell_type_dict[x] for x in train_y])
-        labeled_edges = get_mouselymph_edge_index(labeled_pos, distance_thres)
-        unlabeled_edges = get_mouselymph_edge_index(unlabeled_pos, distance_thres)
+        labeled_pos = train_df_sampled.iloc[:, -3:-1].values 
+        unlabeled_pos = test_df.iloc[:, -3:-1].values
     elif way == 'cross':
         df = pd.read_csv(filename)
         train_df = df.loc[df['region'] == 1]
