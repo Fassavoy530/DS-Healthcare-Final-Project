@@ -22,7 +22,8 @@ class STELLAR:
                                     args.num_attn_heads,
                                     args.cnn_type)
         self.model = self.model.to(args.device)
-
+    
+    # Training function for finding novel cell types
     def train_supervised(self, args, model, device, dataset, optimizer, epoch):
         model.train()
         ce = nn.CrossEntropyLoss()
@@ -45,7 +46,8 @@ class STELLAR:
             loss.backward()
             optimizer.step()
         print('Loss: {:.6f}'.format(sum_loss / (batch_idx + 1)))
-
+    
+    # Assign novel cells
     def est_seeds(self, args, model, device, dataset, clusters, num_seed_class):
         model.eval()
         entrs = np.array([])
@@ -73,7 +75,8 @@ class STELLAR:
         for i, idx in enumerate(novel_cluster_idxs):
             novel_label_seeds[clusters == idx] = largest_seen_id + i + 1
         return novel_label_seeds
-
+    
+    # Training for general cell type annotions using STELLAR objective function
     def train_epoch(self, args, model, device, dataset, optimizer, m, epoch):
         """ Train for 1 epoch."""
         model.train()
@@ -145,7 +148,8 @@ class STELLAR:
             optimizer.step()
 
         print('Loss: {:.6f}'.format(sum_loss / (batch_idx + 1)))
-
+    
+    # Assign general cell type predictions
     def pred(self):
         self.model.eval()
         preds = np.array([])
@@ -170,10 +174,12 @@ class STELLAR:
         sc.tl.louvain(adata, 1)
         clusters = adata.obs['louvain'].values
         clusters = clusters.astype(int)
-
+        
+        # initialize model for finding novel cell types
         seed_model = models.FCNet(x_dim=self.args.input_dim, num_cls=torch.max(self.dataset.labeled_data.y) + 1)
         seed_model = seed_model.to(self.args.device)
         seed_optimizer = optim.Adam(seed_model.parameters(), lr=1e-3, weight_decay=5e-2)
+        # training for finding novel cell types
         for epoch in range(20):
             self.train_supervised(self.args, seed_model, self.args.device, self.dataset, seed_optimizer, epoch)
         novel_label_seeds = self.est_seeds(self.args, seed_model, self.args.device, self.dataset, clusters,
@@ -181,7 +187,8 @@ class STELLAR:
         self.dataset.unlabeled_data.novel_label_seeds = torch.tensor(novel_label_seeds)
         # Set the optimizer
         optimizer = optim.Adam(self.model.parameters(), lr=self.args.lr, weight_decay=self.args.wd)
-
+        
+        # training for general cell type annotations
         for epoch in range(self.args.epochs):
             mean_uncert, _ = self.pred()
             self.train_epoch(self.args, self.model, self.args.device, self.dataset, optimizer, mean_uncert, epoch)
