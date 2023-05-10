@@ -49,6 +49,8 @@ def main():
         labeled_X, labeled_y, unlabeled_X, test_y, labeled_edges, unlabeled_edges, inverse_dict = load_mouselymph_data(
             './data/region1_healthy_infected_mouse_simplified_revised.csv', args.distance_thres, args.sample_rate, way = 'cross_infection')
         dataset = GraphDataset(labeled_X, labeled_y, unlabeled_X, labeled_edges, unlabeled_edges)
+        
+    # initialize models and training process
     stellar = STELLAR(args, dataset)
     stellar.train()
     _, results = stellar.pred()
