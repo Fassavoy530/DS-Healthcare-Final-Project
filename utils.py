@@ -4,7 +4,7 @@ import os
 import os.path
 import torch.nn.functional as F
 
-
+# create directory in order to store prediction results
 def prepare_save_dir(args, filename):
     """ Create saving directory."""
     runner_name = os.path.basename(filename).split(".")[0]
