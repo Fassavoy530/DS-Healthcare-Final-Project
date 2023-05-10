@@ -14,10 +14,10 @@ conda install pytorch torchvision torchaudio pytorch-cuda=11.7 -c pytorch -c nvi
 conda install pyg -c pyg -y
 pip install torch-scatter==2.1.1 -f https://data.pyg.org/whl/torch-2.0.0%2Bcu117.html
 pip install torch-sparse==0.6.17 -f https://data.pyg.org/whl/torch-2.0.0%2Bcu117.html 
-conda install anndata -c conda-forge -y
+conda install anndata=0.9.1 -c conda-forge -y
 conda install pandas -y
 pip install python-louvain 
-conda install -c conda-forge scanpy -y
+conda install -c conda-forge scanpy=1.9.3 -y
 conda install -c anaconda scikit-image -y
 conda install -c conda-forge igraph -y
 conda install -c conda-forge louvain -y
